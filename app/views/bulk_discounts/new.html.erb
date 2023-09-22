@@ -1,2 +1,14 @@
 <%= render partial: "shared/nav" %>
 
+<h1> Add a new bulk discount: </h1>
+
+<%= form_with model: [:merchant, @discount], method: :post, local: true do |form| %>
+  <%= form.label :quantity, "Quantity threshold:" %>
+  <%= form.number_field :quantity %>
+  <p>
+    <%= form.label :discount, "Discount percentage:"%>
+    <%= form.number_field :discount, within: 1...100 %>%
+  </p>
+
+  <%= form.submit %>  
+<% end %>
