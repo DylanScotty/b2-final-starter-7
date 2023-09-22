@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe 'Merchant Bulk Discounts Index' do
+RSpec.describe 'Merchant Discounts New Page' do
   before :each do
     @merchant = Merchant.create!(name: 'Computer Parts')
 
@@ -40,67 +40,30 @@ RSpec.describe 'Merchant Bulk Discounts Index' do
     @transaction6 = Transaction.create!(credit_card_number: 879799, result: 1, invoice_id: @invoice_7.id)
     @transaction7 = Transaction.create!(credit_card_number: 203942, result: 1, invoice_id: @invoice_2.id)
 
-    @bulk_discount_1 = BulkDiscount.create!(quantity: 10, discount: 20, merchant_id: @merchant.id)
+    # @bulk_discount_1 = BulkDiscount.create!(quantity: 10, discount: 20, merchant_id: @merchant.id)
     @bulk_discount_2 = BulkDiscount.create!(quantity: 15, discount: 30, merchant_id: @merchant.id)
     @bulk_discount_3 = BulkDiscount.create!(quantity: 2, discount: 5, merchant_id: @merchant.id)
-
   end
 
-  describe "User Story 1" do
-    it "Merchant can see a link to their discounts index" do
-        visit merchant_dashboard_index_path(@merchant)
-
-        expect(page).to have_link("Discounts")
-
-        click_link "Discounts"
-
-        expect(current_path).to eq("/merchants/#{@merchant.id}/bulk_discounts")
-
-        expect(page).to have_content("All your bulk discounts:")
-
-        within("#merchant_discount-#{@bulk_discount_1.id}") {
-          expect(page).to have_content("Discount amount: 20.0%")
-          expect(page).to have_content("Discount quantity threshold: 10 items")
-        }
-        within("#merchant_discount-#{@bulk_discount_2.id}") {
-          expect(page).to have_content("Discount amount: 30.0%")
-          expect(page).to have_content("Discount quantity threshold: 15 items")
-        }
-        within("#merchant_discount-#{@bulk_discount_3.id}") {
-          expect(page).to have_content("Discount amount: 5.0%")
-          expect(page).to have_content("Discount quantity threshold: 2 items")
-        }
-    end
-
-    it 'has a link that goes to the show page' do
-        visit merchant_bulk_discounts_path(@merchant)
-
-        within("#merchant_discount-#{@bulk_discount_1.id}") {
-          expect(page).to have_link("Discount ##{@bulk_discount_1.id}", href: merchant_bulk_discount_path(@merchant.id, @bulk_discount_1.id))
-        }
-        within("#merchant_discount-#{@bulk_discount_2.id}") {
-          expect(page).to have_link("Discount ##{@bulk_discount_2.id}", href: merchant_bulk_discount_path(@merchant.id, @bulk_discount_2.id))
-        }
-        within("#merchant_discount-#{@bulk_discount_2.id}") {
-          expect(page).to have_link("Discount ##{@bulk_discount_2.id}", href: merchant_bulk_discount_path(@merchant.id, @bulk_discount_2.id))
-        }
-  
-        click_link "Discount ##{@bulk_discount_1.id}"
-  
-        expect(current_path).to eq(merchant_bulk_discount_path(@merchant.id, @bulk_discount_1.id))
-    end
-
-    describe 'User Story 2' do
-        it 'the merchant can see a link to create new discount' do
-          visit merchant_bulk_discounts_path(@merchant)
-
-          expect(page).to have_link('Create new discount', href: new_merchant_bulk_discount_path(@merchant.id))
+  it 'shows the user a form to add a new bulk discount' do
+    visit new_merchant_bulk_discount_path(@merchant.id)
     
-          click_link "Create new discount"
-    
-          expect(current_path).to eq(new_merchant_bulk_discount_path(@merchant.id))
-        end
-    end
+    expect(page).to have_field("Quantity threshold:")
+    expect(page).to have_field("Discount percentage:")
   end
 
+  it 'redirects to the bulk discount page when the form is filled out with data' do
+    visit new_merchant_bulk_discount_path(@merchant.id)
+  
+    fill_in "Quantity threshold:", with: 10
+    fill_in "Discount percentage:", with: 20
+  
+    click_button "Create Bulk discount"
+  
+    expect(current_path).to eq(merchant_bulk_discounts_path(@merchant.id))
+    save_and_open_page
+  
+    expect(page).to have_content("Discount amount: 20.0%")
+    expect(page).to have_content("Discount quantity threshold: 10 items")
+  end
 end
