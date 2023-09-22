@@ -40,6 +40,10 @@ RSpec.describe 'Merchant Bulk Discounts Index' do
     @transaction6 = Transaction.create!(credit_card_number: 879799, result: 1, invoice_id: @invoice_7.id)
     @transaction7 = Transaction.create!(credit_card_number: 203942, result: 1, invoice_id: @invoice_2.id)
 
+    @bulk_discount_1 = BulkDiscount.create!(quantity: 10, discount: 20, merchant_id: @merchant.id)
+    @bulk_discount_2 = BulkDiscount.create!(quantity: 15, discount: 30, merchant_id: @merchant.id)
+    @bulk_discount_3 = BulkDiscount.create!(quantity: 2, discount: 5, merchant_id: @merchant.id)
+
   end
 
   describe "User Story 1" do
@@ -51,6 +55,8 @@ RSpec.describe 'Merchant Bulk Discounts Index' do
         click_link "Discounts"
 
         expect(current_path).to eq("/merchants/#{@merchant.id}/bulk_discounts")
+
+        expect(page).to have_content("All your bulk discounts:")
 
         within("#merchant_discount-#{@bulk_discount_1.id}") {
           expect(page).to have_content("Discount amount: 20.0%")
@@ -64,6 +70,24 @@ RSpec.describe 'Merchant Bulk Discounts Index' do
           expect(page).to have_content("Discount amount: 5.0%")
           expect(page).to have_content("Discount quantity threshold: 2 items")
         }
+    end
+
+    it 'has a link that goes to the show page' do
+        visit merchant_bulk_discounts_path(@merchant)
+
+        within("#merchant_discount-#{@bulk_discount_1.id}") {
+          expect(page).to have_link("Discount ##{@bulk_discount_1.id}", href: merchant_bulk_discount_path(@merchant.id, @bulk_discount_1.id))
+        }
+        within("#merchant_discount-#{@bulk_discount_2.id}") {
+          expect(page).to have_link("Discount ##{@bulk_discount_2.id}", href: merchant_bulk_discount_path(@merchant.id, @bulk_discount_2.id))
+        }
+        within("#merchant_discount-#{@bulk_discount_2.id}") {
+          expect(page).to have_link("Discount ##{@bulk_discount_2.id}", href: merchant_bulk_discount_path(@merchant.id, @bulk_discount_2.id))
+        }
+  
+        click_link "Discount ##{@bulk_discount_1.id}"
+  
+        expect(current_path).to eq(merchant_bulk_discount_path(@merchant.id, @bulk_discount_1.id))
     end
   end
 
