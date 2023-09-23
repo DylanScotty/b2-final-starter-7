@@ -89,6 +89,7 @@ RSpec.describe 'Merchant Bulk Discounts Index' do
   
         expect(current_path).to eq(merchant_bulk_discount_path(@merchant.id, @bulk_discount_1.id))
     end
+  end
 
     describe 'User Story 2' do
         it 'the merchant can see a link to create new discount' do
@@ -101,6 +102,35 @@ RSpec.describe 'Merchant Bulk Discounts Index' do
           expect(current_path).to eq(new_merchant_bulk_discount_path(@merchant.id))
         end
     end
-  end
 
+    describe 'User Story 3' do
+      it 'has a link to delete a discount' do
+        visit merchant_bulk_discounts_path(@merchant)
+  
+        within("#merchant_discount-#{@bulk_discount_1.id}") {
+          expect(page).to have_button("Delete Discount ##{@bulk_discount_1.id}")
+        }
+        within("#merchant_discount-#{@bulk_discount_2.id}") {
+          expect(page).to have_button("Delete Discount ##{@bulk_discount_2.id}")
+        }
+        within("#merchant_discount-#{@bulk_discount_3.id}") {
+          expect(page).to have_button("Delete Discount ##{@bulk_discount_3.id}")
+        }
+      end
+
+      it 'when you click delete discount you are routed back to index page' do
+        visit merchant_bulk_discounts_path(@merchant)
+        
+        within("#merchant_discount-#{@bulk_discount_2.id}") {
+          click_button "Delete Discount ##{@bulk_discount_2.id}"
+        }
+  
+        expect(current_path).to eq(merchant_bulk_discounts_path(@merchant))
+        
+        expect(page).to_not have_content("Discount amount: 30.0%")
+        expect(page).to_not have_content("Discount quantity threshold: 15 items")
+  
+        expect(page).to have_content("Discount ##{@bulk_discount_2.id} has been Deleted!")
+      end
+    end
 end
