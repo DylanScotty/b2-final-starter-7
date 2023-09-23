@@ -26,6 +26,14 @@ class BulkDiscountsController < ApplicationController
       end
     end
 
+    def destroy
+      merchant = Merchant.find(params[:merchant_id])
+      discount = merchant.bulk_discounts.find(params[:id])
+      discount.destroy
+      flash[:notice] = "Discount ##{discount.id} has been Deleted!"
+      redirect_to merchant_bulk_discounts_path(merchant.id)
+    end
+
     private
      def bulk_discount_params
         params.require(:bulk_discount).permit(:quantity, :discount)
