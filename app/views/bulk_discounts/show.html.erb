@@ -6,3 +6,4 @@
 
 <h4>Discount percentage: <%= @discount.discount %>%</h3>
 
+<%= link_to "Edit Bulk Discount", edit_merchant_bulk_discount_path(@merchant.id, @discount.id)%>
