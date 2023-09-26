@@ -11,7 +11,7 @@ RSpec.describe 'Merchant Bulk Discounts Show' do
 
    describe 'Show page' do
      it "shows the discount's quantity and percentage" do 
-        save_and_open_page
+
       expect(page).to have_content("Discount ##{@bulk_discount.id}")
       expect(page).to have_content("Quantity threshold: #{@bulk_discount.quantity} items")
       expect(page).to have_content("Discount percentage: #{@bulk_discount.discount}%")
