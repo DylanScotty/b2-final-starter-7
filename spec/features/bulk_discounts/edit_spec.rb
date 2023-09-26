@@ -28,6 +28,8 @@ RSpec.describe 'Merchant Bulk Discounts Edit' do
 
       expect(page).to have_content("Discount percentage: 25.0%")
       expect(page).to have_content("Quantity threshold: 15 items")
+      expect(page).not_to have_content("Discount percentage: 20.0%")
+      expect(page).not_to have_content("Quantity threshold: 10 items")
       end
   end
 end
